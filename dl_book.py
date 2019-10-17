@@ -3,13 +3,18 @@
 from selenium import webdriver
 import time
 from bs4 import BeautifulSoup
+import re
 
 def Get_book_url(page_html):
     '''
     通过html获取本页面所有书籍的url
     '''
-    soup = BeautifulSoup(page_html)
+    book_url = []
+    
+    soup = BeautifulSoup(page_html,'lxml')
 
+    card_list = soup.find_all('a',title=re.compile(r'\S*'))
+    print(card_list)
 
 url = r'https://sobooks.cc/'
 
