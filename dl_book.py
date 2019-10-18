@@ -6,6 +6,7 @@ import time
 from bs4 import BeautifulSoup
 import re
 import requests
+import json
 
 def Get_max_page(html):
     soup = BeautifulSoup(html,'lxml')
@@ -39,6 +40,8 @@ def Get_Extraction_code(url):
 
 def baidu_down(url, key):
     chrome = webdriver.Chrome()
+    chrome.get('http://www.baidu.com')
+
     chrome.implicitly_wait(20)
     chrome.get(url)
 
@@ -48,7 +51,7 @@ def baidu_down(url, key):
     chrome.execute_script("arguments[0].click();",tijiao)
     ext_code = Get_Extraction_code(chrome.page_source)
 
-    time.sleep(5)
+    # time.sleep(5)
 
     # 打开百度云进行登录并转存
     tijiao = chrome.find_element_by_xpath(r"/html/body/section/div[2]/div/article/table/tbody/tr[3]/td/a[1]")
@@ -60,6 +63,14 @@ def baidu_down(url, key):
     chrome.find_element_by_xpath(r'//*[@id="mkco9Kb"]').send_keys(ext_code)
     tijiao = chrome.find_element_by_xpath(r'//*[@id="grmvE3Vo"]/a/span/span')
     chrome.execute_script("arguments[0].click();",tijiao)
+
+    chrome.delete_all_cookies()
+
+    with open('cook.txt', 'r') as fp:
+        cookies = json.load(fp)
+        for cookie in cookies:
+           chrome.add_cookie(cookie) 
+
 
     # 点击全选
     tijiao = chrome.find_element_by_xpath(r'//*[@id="shareqr"]/div[2]/div[2]/div/ul[1]/li[1]/div/span[1]')
@@ -112,6 +123,13 @@ for i in range(max_page):
         baidu_down(b_url, passkey)
         time.sleep(3)
 
-dv.close()
     
 
+'''
+chrome = webdriver.Chrome()
+cookies = chrome.get_cookies()
+with open('cook.txt','w') as fp:
+    json.dump(cookies, fp)
+
+chrome.close()
+'''
